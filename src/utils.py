@@ -1,7 +1,10 @@
+import json
 import os
 from datetime import datetime
 
 import pandas as pd
+import requests
+from dotenv import load_dotenv
 
 
 def user_greeting(str_time: str) -> str:
@@ -27,6 +30,26 @@ def read_operations_from_excel(path: str) -> list:
         return []
 
 
+def read_user_settings_from_json(path: str) -> list:
+    path_json_file = os.path.abspath(path)
+    try:
+        with open(path_json_file, "r", encoding="utf-8") as json_file:
+            data = json.load(json_file)
+    except FileNotFoundError:
+        # logger.critical("Файл json не найден")
+        # logger.critical(file_name)
+        # logger.critical(os.path.dirname(__file__))
+        # logger.critical(path_json_file)
+        return []
+
+    if len(data) == 0 or type(data) is not dict:
+        # logger.error("Нет данных или не верный формат данных")
+        return []
+    else:
+        # logger.info("Получены данные по транзакциям из json-файла")
+        return data
+
+
 def selection_of_operations_for_analysis(data: list, date_now: str) -> list:
     selected_operations = []
     start_date = datetime.strptime('01' + date_now[2:], '%d.%m.%Y')
@@ -43,6 +66,8 @@ def selection_of_operations_for_analysis(data: list, date_now: str) -> list:
 def processing_operations_main(data: list) -> list:
     list_data = []
     for operation in data:
+        if type(operation['Номер карты']) == float:
+            operation['Номер карты'] = '_NaN_'
         if len(list_data) == 0 and int(operation['Сумма операции']) < 0:
             temp_dict = {}
             temp_dict['last_digits'] = operation['Номер карты']
@@ -66,10 +91,44 @@ def processing_operations_main(data: list) -> list:
     return list_data
 
 
-
-
-
 def processing_operations_main_top_five(data: list) -> list:
     df = pd.DataFrame(data)
     sort_list = df.sort_values('Сумма операции с округлением', ascending=False)[:5]
     return sort_list.to_dict("records")
+
+
+def exchange_rates(currencies: list = ["USD", "EUR"]) -> float | None:
+    load_dotenv()
+    api_key = os.getenv("API_KEY_EXCHANGE_RATES")
+    base_ = "RUB"
+    symbols_ = ','.join(currencies)
+    url = (f"https://api.apilayer.com/exchangerates_data/latest?symbols={symbols_}&base={base_}")
+    headers = {"apikey": api_key}
+    response = requests.get(url, headers=headers)
+
+    status_code = response.status_code
+    if status_code == 200:
+        result = response.json()
+    else:
+        return {}
+
+    for keys, values in result['rates'].items():
+        result['rates'][keys] = round(1 / values, 2)
+
+    return result
+
+
+def stock_prices(stocks: list = ["AAPL", "AMZN", "GOOGL", "MSFT", "TSLA"]) -> float | None:
+    load_dotenv()
+    api_key = os.getenv("API_KEY_STOCK_PRICES")
+    symbol_ = ','.join(stocks)
+    url = (f"https://api.twelvedata.com/price?symbol={symbol_}&apikey={api_key}")
+    response = requests.get(url)
+
+    status_code = response.status_code
+    if status_code == 200:
+        result = response.json()
+    else:
+        return {}
+
+    return result
