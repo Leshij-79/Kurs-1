@@ -8,7 +8,7 @@ from src.utils import user_greeting, read_operations_from_excel, selection_of_op
     read_user_settings_from_json
 
 
-path_log_directory = os.path.abspath("../logs/views.log")
+path_log_directory = os.path.join(os.path.dirname(__file__), "../logs", "views.log")
 logger = logging.getLogger(__name__) if __name__ != "__main__" else logging.getLogger("src.views")
 file_handler = logging.FileHandler(path_log_directory, mode="w", encoding="utf-8")
 file_formatter = logging.Formatter("%(asctime)s %(name)s %(levelname)s: %(message)s")

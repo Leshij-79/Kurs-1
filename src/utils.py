@@ -8,7 +8,7 @@ import requests
 from dotenv import load_dotenv
 
 
-path_log_directory = os.path.abspath("../logs/utils.log")
+path_log_directory = os.path.join(os.path.dirname(__file__), "../logs", "utils.log")
 logger = logging.getLogger(__name__) if __name__ != "__main__" else logging.getLogger("src.utils")
 file_handler = logging.FileHandler(path_log_directory, mode="w", encoding="utf-8")
 file_formatter = logging.Formatter("%(asctime)s %(name)s %(levelname)s: %(message)s")
@@ -48,6 +48,11 @@ def read_operations_from_excel(path: str) -> list | None:
         return excel_data.to_dict("records")
     except FileNotFoundError:
         logger.critical("XLSX-файл не найден")
+        logger.critical(os.path.dirname(__file__))
+        return []
+    except PermissionError:
+        logger.critical("XLSX-файл не задан")
+        logger.critical(os.path.dirname(__file__))
         return []
 
 
@@ -64,6 +69,11 @@ def read_user_settings_from_json(path: str) -> dict | None:
             logger.info("Данные с json-файла прочитаны")
     except FileNotFoundError:
         logger.critical("Файл json не найден")
+        logger.critical(os.path.dirname(__file__))
+        logger.critical(path_json_file)
+        return []
+    except PermissionError:
+        logger.critical("Файл json не задан")
         logger.critical(os.path.dirname(__file__))
         logger.critical(path_json_file)
         return []
@@ -178,6 +188,9 @@ def exchange_rates(currencies: list = ["USD", "EUR"]) -> list | None:
         logger.error(f'Ошибка запроса - {status_code}. Ответ на запрос не сформирован. Возращен пустой список')
         return []
 
+    print(result)
+
+
     for keys, values in result['rates'].items():
         result['rates'][keys] = round(1 / values, 2)
     logger.info('Котировки приведены в соответствие')
@@ -188,6 +201,7 @@ def exchange_rates(currencies: list = ["USD", "EUR"]) -> list | None:
         temp_dict['rate'] = values
         temp_list.append(temp_dict)
     logger.info('Преобразование данных завершено')
+    print(temp_list)
     return temp_list
 
 
