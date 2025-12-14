@@ -41,7 +41,8 @@ def read_operations_from_excel(path: str) -> list | None:
     :param path: Путь к xlsx-файлу
     :return: Операции пользователя в формате списка
     """
-    path_excel_file_operation = os.path.abspath(path)
+    path = ''
+    path_excel_file_operation = os.path.join(os.path.dirname(__file__), path)
     try:
         excel_data = pd.read_excel(path_excel_file_operation)
         logger.info("Данные с xlsx-файла прочитаны")
@@ -50,8 +51,8 @@ def read_operations_from_excel(path: str) -> list | None:
         logger.critical("XLSX-файл не найден")
         logger.critical(os.path.dirname(__file__))
         return []
-    except PermissionError:
-        logger.critical("XLSX-файл не задан")
+    except TypeError:
+        logger.critical("Имя файла отсутствует")
         logger.critical(os.path.dirname(__file__))
         return []
 
@@ -187,10 +188,6 @@ def exchange_rates(currencies: list = ["USD", "EUR"]) -> list | None:
     else:
         logger.error(f'Ошибка запроса - {status_code}. Ответ на запрос не сформирован. Возращен пустой список')
         return []
-
-    print(result)
-
-
     for keys, values in result['rates'].items():
         result['rates'][keys] = round(1 / values, 2)
     logger.info('Котировки приведены в соответствие')
@@ -201,7 +198,6 @@ def exchange_rates(currencies: list = ["USD", "EUR"]) -> list | None:
         temp_dict['rate'] = values
         temp_list.append(temp_dict)
     logger.info('Преобразование данных завершено')
-    print(temp_list)
     return temp_list
 
 

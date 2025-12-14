@@ -48,6 +48,11 @@ def test_read_operations_from_excel_error() -> None:
     assert read_operations_from_excel("1.xlsx") == []
 
 
+def test_read_operations_from_excel_no_name_file():
+    with pytest.raises(TypeError):
+        read_operations_from_excel()
+
+
 @patch("builtins.open", new_callable=mock_open)
 def test_read_user_settings_from_json(mock_read_from_json, fixture_user_settings) -> None:
     data_mock_for_test = fixture_user_settings

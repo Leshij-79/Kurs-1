@@ -62,6 +62,6 @@ def home_page(datetime_now: datetime) -> list[dict]:
     logger.info('Сформирован json-ответ для главной страницы')
     return json.dumps(json_answer, ensure_ascii=False)
 
-if __name__ == '__main__':
-
-    print(home_page(datetime.now()))
+# if __name__ == '__main__':
+#
+#     print(home_page(datetime.now()))
