@@ -41,7 +41,6 @@ def read_operations_from_excel(path: str) -> list | None:
     :param path: Путь к xlsx-файлу
     :return: Операции пользователя в формате списка
     """
-    path = ''
     path_excel_file_operation = os.path.join(os.path.dirname(__file__), path)
     try:
         excel_data = pd.read_excel(path_excel_file_operation)
