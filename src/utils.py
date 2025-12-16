@@ -2,11 +2,11 @@ import json
 import logging
 import os
 from datetime import datetime
+from typing import Any
 
 import pandas as pd
 import requests
 from dotenv import load_dotenv
-
 
 path_log_directory = os.path.join(os.path.dirname(__file__), "../logs", "utils.log")
 logger = logging.getLogger(__name__) if __name__ != "__main__" else logging.getLogger("src.utils")
@@ -24,18 +24,18 @@ def user_greeting(str_time: str) -> str:
     :return: Сформированное приветствие
     """
     int_hour = int(str_time[:2])
-    logger.info('Формирование приветствия')
+    logger.info("Формирование приветствия")
     if int_hour > 5 and int_hour < 12:
-        return 'Доброе утро'
+        return "Доброе утро"
     elif int_hour > 11 and int_hour < 18:
-        return 'Добрый день'
+        return "Добрый день"
     elif int_hour > 17 and int_hour < 24:
-        return 'Добрый вечер'
+        return "Добрый вечер"
     else:
-        return 'Доброй ночи'
+        return "Доброй ночи"
 
 
-def read_operations_from_excel(path: str) -> list | None:
+def read_operations_from_excel(path: str) -> Any:
     """
     Функция чтения операций пользователя из xlsx-файла
     :param path: Путь к xlsx-файлу
@@ -56,7 +56,7 @@ def read_operations_from_excel(path: str) -> list | None:
         return []
 
 
-def read_user_settings_from_json(path: str) -> dict | None:
+def read_user_settings_from_json(path: str) -> dict[Any, Any] | None:
     """
     Функция чтения настроек пользователя
     :param path: Путь к файлу настроек пользователя
@@ -94,14 +94,14 @@ def selection_of_operations_for_analysis(data: list, date_now: str) -> list:
     :return: Отобранные операции с формате списка
     """
     selected_operations = []
-    start_date = datetime.strptime('01' + date_now[2:], '%d.%m.%Y')
-    end_date = datetime.strptime(date_now + ' 23:59:59', '%d.%m.%Y %H:%M:%S')
-    logger.info('Отбор операций начат')
+    start_date = datetime.strptime("01" + date_now[2:], "%d.%m.%Y")
+    end_date = datetime.strptime(date_now + " 23:59:59", "%d.%m.%Y %H:%M:%S")
+    logger.info("Отбор операций начат")
     for operation in data:
-        select_date = datetime.strptime(operation['Дата операции'], '%d.%m.%Y %H:%M:%S')
-        if (start_date <= select_date <= end_date) and operation['Статус'] == 'OK':
+        select_date = datetime.strptime(operation["Дата операции"], "%d.%m.%Y %H:%M:%S")
+        if (start_date <= select_date <= end_date) and operation["Статус"] == "OK":
             selected_operations.append(operation)
-    logger.info('Отбор операций завершен')
+    logger.info("Отбор операций завершен")
     return selected_operations
 
 
@@ -112,31 +112,31 @@ def processing_operations_main(data: list) -> list:
     :return: Сгруппированные операции пользоватля в формате списка
     """
     list_data = []
-    logger.info('Группировка операций начата')
+    logger.info("Группировка операций начата")
     for operation in data:
-        if type(operation['Номер карты']) == float:
-            operation['Номер карты'] = '_NaN_'
-        if len(list_data) == 0 and int(operation['Сумма операции']) < 0:
+        if type(operation["Номер карты"]) is float:
+            operation["Номер карты"] = "_NaN_"
+        if len(list_data) == 0 and int(operation["Сумма операции"]) < 0:
             temp_dict = {}
-            temp_dict['last_digits'] = operation['Номер карты']
-            temp_dict['total_spent'] = operation['Сумма операции с округлением']
-            temp_dict['cashback'] = operation['Бонусы (включая кэшбэк)']
+            temp_dict["last_digits"] = operation["Номер карты"]
+            temp_dict["total_spent"] = operation["Сумма операции с округлением"]
+            temp_dict["cashback"] = operation["Бонусы (включая кэшбэк)"]
             list_data.append(temp_dict)
         else:
             for item in list_data:
                 cont_ = 0
-                if item['last_digits'] == operation['Номер карты']:
-                    item['total_spent'] += operation['Сумма операции с округлением']
-                    item['cashback'] = operation['Бонусы (включая кэшбэк)']
+                if item["last_digits"] == operation["Номер карты"]:
+                    item["total_spent"] += operation["Сумма операции с округлением"]
+                    item["cashback"] = operation["Бонусы (включая кэшбэк)"]
                     cont_ += 1
                     break
-            if cont_ == 0 and int(operation['Сумма операции']) < 0:
+            if cont_ == 0 and int(operation["Сумма операции"]) < 0:
                 temp_dict = {}
-                temp_dict['last_digits'] = operation['Номер карты']
-                temp_dict['total_spent'] = operation['Сумма операции с округлением']
-                temp_dict['cashback'] = operation['Бонусы (включая кэшбэк)']
+                temp_dict["last_digits"] = operation["Номер карты"]
+                temp_dict["total_spent"] = operation["Сумма операции с округлением"]
+                temp_dict["cashback"] = operation["Бонусы (включая кэшбэк)"]
                 list_data.append(temp_dict)
-    logger.info('Группировка операций завершена')
+    logger.info("Группировка операций завершена")
     return list_data
 
 
@@ -146,22 +146,22 @@ def processing_operations_main_top_five(data: list) -> list | None:
     :param data: Отобранные для анализа операции пользователя в ормате списка
     :return: Отобранные ТОП-5 операций пользователя в формате списка
     """
-    logger.info('Отбор топ 5 операций начат')
+    logger.info("Отбор топ 5 операций начат")
     if len(data) == 0 or type(data) is not list:
         return []
     df = pd.DataFrame(data)
-    sort_list = df.sort_values('Сумма операции с округлением', ascending=False)[:5]
+    sort_list = df.sort_values("Сумма операции с округлением", ascending=False)[:5]
     list_top_five_transactions = sort_list.to_dict("records")
-    logger.info('Отбор топ 5 операций завершен')
+    logger.info("Отбор топ 5 операций завершен")
     temp_list = []
     for item in list_top_five_transactions:
         temp_dict = {}
-        temp_dict['date'] = item['Дата платежа']
-        temp_dict['amount'] = item['Сумма операции с округлением']
-        temp_dict['category'] = item['Категория']
-        temp_dict['description'] = item['Описание']
+        temp_dict["date"] = item["Дата платежа"]
+        temp_dict["amount"] = item["Сумма операции с округлением"]
+        temp_dict["category"] = item["Категория"]
+        temp_dict["description"] = item["Описание"]
         temp_list.append(temp_dict)
-    logger.info('Преобразование данных завершено')
+    logger.info("Преобразование данных завершено")
     return temp_list
 
 
@@ -171,32 +171,32 @@ def exchange_rates(currencies: list = ["USD", "EUR"]) -> list | None:
     :param currencies: Список валют, по которым отправляется запрос на котировки в формате списка
     :return: Котировки валют в формате списка
     """
-    logger.info('Запрос котировок валют начат')
+    logger.info("Запрос котировок валют начат")
     load_dotenv()
     api_key = os.getenv("API_KEY_EXCHANGE_RATES")
     base_ = "RUB"
-    symbols_ = ','.join(currencies)
-    url = (f"https://api.apilayer.com/exchangerates_data/latest?symbols={symbols_}&base={base_}")
+    symbols_ = ",".join(currencies)
+    url = f"https://api.apilayer.com/exchangerates_data/latest?symbols={symbols_}&base={base_}"
     headers = {"apikey": api_key}
     response = requests.get(url, headers=headers)
-    logger.info('Получена реакция на запрос')
+    logger.info("Получена реакция на запрос")
     status_code = response.status_code
     if status_code == 200:
         result = response.json()
-        logger.info('Ответ на запрос сформирован')
+        logger.info("Ответ на запрос сформирован")
     else:
-        logger.error(f'Ошибка запроса - {status_code}. Ответ на запрос не сформирован. Возращен пустой список')
+        logger.error(f"Ошибка запроса - {status_code}. Ответ на запрос не сформирован. Возращен пустой список")
         return []
-    for keys, values in result['rates'].items():
-        result['rates'][keys] = round(1 / values, 2)
-    logger.info('Котировки приведены в соответствие')
+    for keys, values in result["rates"].items():
+        result["rates"][keys] = round(1 / values, 2)
+    logger.info("Котировки приведены в соответствие")
     temp_list = []
-    for keys, values in result['rates'].items():
+    for keys, values in result["rates"].items():
         temp_dict = {}
-        temp_dict['currency'] = keys
-        temp_dict['rate'] = values
+        temp_dict["currency"] = keys
+        temp_dict["rate"] = values
         temp_list.append(temp_dict)
-    logger.info('Преобразование данных завершено')
+    logger.info("Преобразование данных завершено")
     return temp_list
 
 
@@ -206,26 +206,26 @@ def stock_prices(stocks: list = ["AAPL", "AMZN", "GOOGL", "MSFT", "TSLA"]) -> li
     :param stocks: Список акций, по которым делается запрос на котировки в формате списка
     :return: Котировки акций в формате списка
     """
-    logger.info('Запрос котировок акций начат')
+    logger.info("Запрос котировок акций начат")
     load_dotenv()
     api_key = os.getenv("API_KEY_STOCK_PRICES")
-    symbol_ = ','.join(stocks)
-    url = (f"https://api.twelvedata.com/price?symbol={symbol_}&apikey={api_key}")
+    symbol_ = ",".join(stocks)
+    url = f"https://api.twelvedata.com/price?symbol={symbol_}&apikey={api_key}"
     response = requests.get(url)
-    logger.info('Получена реакция на запрос')
+    logger.info("Получена реакция на запрос")
     status_code = response.status_code
     if status_code == 200:
         result = response.json()
-        logger.info('Ответ на запрос сформирован')
+        logger.info("Ответ на запрос сформирован")
     else:
-        logger.error(f'Ошибка запроса - {status_code}. Ответ на запрос не сформирован. Возращен пустой список')
+        logger.error(f"Ошибка запроса - {status_code}. Ответ на запрос не сформирован. Возращен пустой список")
         return []
 
     temp_list = []
     for keys, values in result.items():
         temp_dict = {}
-        temp_dict['stock'] = keys
-        temp_dict['price'] = values['price']
+        temp_dict["stock"] = keys
+        temp_dict["price"] = values["price"]
         temp_list.append(temp_dict)
-    logger.info('Преобразование данных завершено')
+    logger.info("Преобразование данных завершено")
     return temp_list
