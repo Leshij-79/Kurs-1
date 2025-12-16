@@ -16,6 +16,10 @@ logger.setLevel(logging.DEBUG)
 
 
 def search_by_phone_number() -> list[dict]:
+    """
+    Функция поиска транзакций, в описании которых есть номер телефона
+    :return: Отобранные транзакции по запросу пользователя
+    """
     list_user_operations = read_operations_from_excel('../data/operations.xlsx')
     logger.info('Прочитаны операции пользователя')
     json_answer = []
@@ -25,8 +29,3 @@ def search_by_phone_number() -> list[dict]:
             json_answer.append(operation)
     logger.info('Операции отобраны')
     return json.dumps(json_answer, ensure_ascii=False)
-
-
-# if __name__ == '__main__':
-#     print(search_by_phone_number())
-#     print(type(search_by_phone_number()))

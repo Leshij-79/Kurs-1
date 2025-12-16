@@ -6,6 +6,9 @@ from src.reports import spending_by_category
 
 
 def test_spending_by_category(fixture_spending_by_category, fixture_list_user_operations_two_days):
+    """
+    Тест поиска по категории
+    """
     category = 'Мобильная связь'
     date_now = '02.11.2021'
     start_data = pd.DataFrame(fixture_list_user_operations_two_days)
@@ -14,6 +17,9 @@ def test_spending_by_category(fixture_spending_by_category, fixture_list_user_op
 
 
 def test_spending_by_category_no_date(fixture_spending_by_category, fixture_list_user_operations_two_days):
+    """
+    Тест поиска по категории без указания даты
+    """
     category = 'Мобильная связь'
     start_data = pd.DataFrame(fixture_list_user_operations_two_days)
     result_data = []

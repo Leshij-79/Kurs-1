@@ -20,6 +20,9 @@ def test_home_page(
         fixture_home_page,
         fixture_user_settings
 ) -> None:
+    """
+    Тест формирования json-ответа для главной страницы
+    """
     mock_stock_prices.return_value = fixture_stock_prices_now
     mock_read_user_settings_from_json.return_value = fixture_user_settings
     mock_read_operations_from_excel.return_value = fixture_list_user_operations_two_days
@@ -42,6 +45,9 @@ def test_home_page_no_user_settings(
         fixture_home_page,
         fixture_user_settings
 ) -> None:
+    """
+    Тест формирования json-ответа для главной страницы без настроек пользователя
+    """
     mock_stock_prices.return_value = fixture_stock_prices_now
     mock_read_user_settings_from_json.return_value = []
     mock_read_operations_from_excel.return_value = fixture_list_user_operations_two_days

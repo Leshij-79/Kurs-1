@@ -3,16 +3,25 @@ import pytest
 
 @pytest.fixture
 def fixture_user_settings() -> dict:
+    """
+    Фикстура настроек пользователя
+    """
     return {'user_currencies': ['USD', 'EUR'], 'user_stocks': ['AAPL', 'AMZN', 'GOOGL', 'MSFT', 'TSLA']}
 
 
 @pytest.fixture
 def fixture_greeting() -> str:
+    """
+    Фикстура приветствия
+    """
     return 'Добрый день'
 
 
 @pytest.fixture
 def fixture_list_user_operations_two_days() -> list:
+    """
+    Фикстура операций пользователя за два дня
+    """
     return [
         {'Дата операции': '02.11.2021 18:22:08', 'Дата платежа': '02.11.2021', 'Номер карты': '*4556', 'Статус': 'OK',
          'Сумма операции': -60.0, 'Валюта операции': 'RUB', 'Сумма платежа': -60.0, 'Валюта платежа': 'RUB',
@@ -63,6 +72,9 @@ def fixture_list_user_operations_two_days() -> list:
 
 @pytest.fixture
 def fixture_list_user_operations_three_days() -> list:
+    """
+    Фикстура операций пользователя за три дня
+    """
     return [
         {'Дата операции': '03.11.2021 22:40:58', 'Дата платежа': '04.11.2021', 'Номер карты': '*7197', 'Статус': 'OK',
          'Сумма операции': -28.41, 'Валюта операции': 'RUB', 'Сумма платежа': -28.41, 'Валюта платежа': 'RUB',
@@ -149,6 +161,9 @@ def fixture_list_user_operations_three_days() -> list:
 
 @pytest.fixture
 def fixture_list_sum_operations() -> list[dict]:
+    """
+    Фикстура суммы операций по картам пользователя
+    """
     return [
         {'last_digits': '*4556', 'total_spent': 737.79, 'cashback': 1},
         {'last_digits': '*7197', 'total_spent': 5578.77, 'cashback': 110}
@@ -157,6 +172,9 @@ def fixture_list_sum_operations() -> list[dict]:
 
 @pytest.fixture
 def fixture_list_top_five_transactions() -> list[dict]:
+    """
+    Фикстура ТОП-5 операций пользователя
+    """
     return [
         {'date': '02.11.2021', 'amount': 5510.8, 'category': 'Каршеринг', 'description': 'Ситидрайв'},
         {'date': '01.11.2021', 'amount': 228.0, 'category': 'Мобильная связь',
@@ -170,11 +188,17 @@ def fixture_list_top_five_transactions() -> list[dict]:
 
 @pytest.fixture
 def fixture_exchange_rates_now() -> list[dict]:
+    """
+    Фикстура катеровок валют
+    """
     return [{'currency': 'USD', 'rate': 79.67}, {'currency': 'EUR', 'rate': 93.58}]
 
 
 @pytest.fixture
 def fixture_stock_prices_now() -> list[dict]:
+    """
+    Фикстура катеровок акций
+    """
     return [
         {'stock': 'AAPL', 'price': '278.28000'},
         {'stock': 'AMZN', 'price': '226.19000'},
@@ -186,6 +210,9 @@ def fixture_stock_prices_now() -> list[dict]:
 
 @pytest.fixture
 def fixture_home_page() -> dict:
+    """
+    Фикстура json-ответа для главной страницы
+    """
     return {
         "greeting": "Добрый день",
         "cards": [
@@ -214,6 +241,9 @@ def fixture_home_page() -> dict:
 
 @pytest.fixture
 def fixture_search_by_phone_number() -> str:
+    """
+    Фикстура поиска по телефону
+    """
     return ('[{"Дата операции": "01.11.2021 15:32:24", "Дата платежа": "01.11.2021", "Номер карты": "*4556", '
             '"Статус": "OK", "Сумма операции": -228.0, "Валюта операции": "RUB", "Сумма платежа": -228.0, '
             '"Валюта платежа": "RUB", "Кэшбэк": 11.0, "Категория": "Мобильная связь", "MCC": 5411.0, "Описание": '
@@ -227,6 +257,9 @@ def fixture_search_by_phone_number() -> str:
 
 @pytest.fixture
 def fixture_spending_by_category() -> list[dict]:
+    """
+    Фикстура поиска по категории
+    """
     return [
         {"Дата операции": "01.11.2021 15:32:24", "Дата платежа": "01.11.2021", "Номер карты": "*4556", "Статус": "OK",
          "Сумма операции": -228.0, "Валюта операции": "RUB", "Сумма платежа": -228.0, "Валюта платежа": "RUB",

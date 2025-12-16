@@ -17,6 +17,9 @@ logger.setLevel(logging.DEBUG)
 
 
 def json_file_writer(func):
+    """
+    Декоратор записи в json-файл
+    """
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
         path_file = os.path.join(os.path.dirname(__file__), "../data", "operations.json")
@@ -30,6 +33,13 @@ def json_file_writer(func):
 def spending_by_category(transactions: pd.DataFrame,
                          category: str,
                          date: Optional[str] = None) -> pd.DataFrame:
+    """
+    Фунция подготовки отчёта по транзакциям в выбранной категории за три месяца от выбраной даты
+    :param transactions: Транзакции пользователя в формате DataFrame
+    :param category: Категория транзакций по которым необходим отбор
+    :param date: Дата по которую необходим отбор
+    :return: Отобранные транзакции по запросу пользователя
+    """
     if date is None or date == '':
         date = datetime.strftime(datetime.now(), "%d.%m.%Y")
     end_date = datetime.strptime(date, '%d.%m.%Y')
